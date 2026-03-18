@@ -1,102 +1,73 @@
 #pragma once
 
 #include <Geode/Geode.hpp>
-#include <Geode/Loader.hpp>
-#include <Geode/utils/web.hpp>
-#include <Geode/loader/Event.hpp>
-#include <Geode/ui/TextInput.hpp>
-#include <cctype>
-#include <algorithm>
+#include <Geode/ui/GeodeUI.hpp>
 #include "boobs.hpp"
 #include "TextureWorkshopLayer.hpp"
 
 using namespace geode::prelude;
 
-
 class TWSFilters : public Popup<> {
 public:
-    //CCMenuItemToggler* versionFilter;
     static inline TWSFilters* get = nullptr;
 
-    bool setup() {
-        log::info("hai");
-        auto winSize = CCDirector::get()->getWinSize();
-
+    bool setup() override {
         get = this;
-        
         this->setTitle("Filters");
-        m_title->setScale(0.85);
+        m_title->setScale(0.85f);
 
-        auto bg = cocos2d::extension::CCScale9Sprite::create("square02_small.png");
-        m_mainLayer->addChild(bg);
-        bg->setPosition(m_mainLayer->getContentSize() / 2);
-        bg->setPositionY(bg->getPositionY() - 13);
-        bg->setContentWidth(110);
-        bg->setContentHeight(180);
-        bg->setOpacity(100);
+        auto winSize = CCDirector::get()->getWinSize();
+        
+        // Use the new Scale9Sprite constructor for 2.2081 compatibility
+        auto bg = typeinfo_cast<CCScale9Sprite*>(CCScale9Sprite::create("square02_small.png"));
+        if (bg) {
+            bg->setContentSize({110, 180});
+            bg->setOpacity(100);
+            bg->setPosition(m_mainLayer->getContentSize() / 2);
+            bg->setPositionY(bg->getPositionY() - 13);
+            m_mainLayer->addChild(bg);
 
-        auto menu = CCMenu::create();
-        menu->setContentSize(bg->getContentSize());
-        bg->addChild(menu);
-        menu->setPosition(0, 0);
+            auto menu = CCMenu::create();
+            menu->setContentSize(bg->getContentSize());
+            menu->setPosition(0, 0);
+            bg->addChild(menu);
 
-        //auto spr = ButtonSprite::create("Hi mom!");
-
-        //auto btn = CCMenuItemSpriteExtra::create(
-            //spr, this, nullptr
-        //);
-
-        //menu->addChild(btn);
-        //btn->setPosition(menu->getContentSize() / 2);
-
-        /*versionFilter = CCMenuItemToggler::createWithStandardSprites(
-            this,
-            menu_selector(TWSFilters::onToggle),
-            1
-        );
-        versionFilter->setTag(1);
-        versionFilter->toggle(boobs::versionFilter);
-        menu->addChild(versionFilter);
-        versionFilter->setPosition(menu->getContentSize() / 2);
-        auto versionFilterLabel = CCLabelBMFont::create("Version\n Filter", "goldFont.fnt");
-        versionFilter->addChild(versionFilterLabel);
-        versionFilterLabel->setScale(0.6);
-        versionFilterLabel->setPosition(versionFilter->getContentSize() / 2);
-        versionFilterLabel->setPositionY(versionFilterLabel->getPositionY() + 33);*/
-
-        auto lol = CCLabelBMFont::create("wait... thats all? WHAT THE fun :3", "chatFont.fnt");
-        lol->setAnchorPoint(ccp(0, 0.5));
-        lol->setScale(0.2);
-        menu->addChild(lol);
-
-        auto uc = CCLabelBMFont::create("Under Construction", "bigFont.fnt");
-        uc->setAnchorPoint(ccp(0.5, 0.5));
-        uc->setScale(0.275);
-        menu->addChild(uc);
-        uc->setPosition(menu->getContentSize().width / 2, menu->getContentSize().height / 2);
+            auto uc = CCLabelBMFont::create("Under Construction", "bigFont.fnt");
+            uc->setScale(0.275f);
+            uc->setPosition(menu->getContentSize() / 2);
+            menu->addChild(uc);
+            
+            // 2.2081: Always call updateLayout on menus
+            menu->updateLayout();
+        }
 
         return true;
     }
 
     void onToggle(CCObject* toggle) {
-        switch (toggle->getTag()) {
-            case 1:
-                boobs::versionFilter = !boobs::versionFilter;
-                Mod::get()->setSavedValue<bool>("version-filter", boobs::versionFilter);
-                TextureWorkshopLayer::get->onGetTPsFinished();
-                break;
-            default:
-                break;
+        // Updated logic to ensure we don't crash if the main layer is null
+        boobs::versionFilter = !boobs::versionFilter;
+        Mod::get()->setSavedValue<bool>("version-filter", boobs::versionFilter);
+        
+        if (TextureWorkshopLayer::get) {
+            TextureWorkshopLayer::get->onGetTPsFinished();
         }
     }
 
     static TWSFilters* create() {
         auto ret = new TWSFilters();
+        // Using "TWS_Box.png"_spr requires the sprite to be in your mod.json resources
         if (ret && ret->initAnchored(140, 230, "TWS_Box.png"_spr)) {
             ret->autorelease();
             return ret;
         }
         CC_SAFE_DELETE(ret);
         return nullptr;
+    }
+    
+    // Ensure the pointer is cleared when closed
+    void onClose(CCObject* obj) override {
+        get = nullptr;
+        Popup::onClose(obj);
     }
 };
