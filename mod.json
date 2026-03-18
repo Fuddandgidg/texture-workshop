@@ -1,5 +1,5 @@
 {
-	"geode": "5.0.3",
+	"geode": "5.3.0",
 	"gd": {
 		"win": "2.2081",
 		"mac": "2.2081",
@@ -7,10 +7,10 @@
 		"android": "2.2081"
 	},
 	"version": "v1.5.0",
-	"id": "uproxide.textures",
-	"name": "Texture Workshop",
-	"developer": "Uproxide",
-	"description": "An index for texture packs :)",
+	"id": "uproxide.textures_fork",
+	"name": "Texture Workshop (2.2081)",
+	"developer": "Uproxide & YourName",
+	"description": "An updated index for texture packs for GD 2.2081.",
 	"resources": {
 		"spritesheets": {
 			"TWSSheet": [
@@ -21,17 +21,22 @@
 			"resources/*.png"
 		]
 	},
-	"dependencies": {
-		"geode.texture-loader": ">=1.9.0",
-		"alphalaneous.happy_textures": {
-			"importance": "recommended",
-			"version": ">=2.1.6"
+	"dependencies": [
+		{
+			"id": "geode.texture-loader",
+			"version": ">=1.10.0",
+			"importance": "required"
+		},
+		{
+			"id": "alphalaneous.happy_textures",
+			"version": ">=2.1.6",
+			"importance": "recommended"
 		}
-	},
+	],
 	"settings": {
 		"cert-verification": {
 			"name": "Cert Verification",
-			"description": "Enable Cert Verification",
+			"description": "Enable Cert Verification for API calls.",
 			"type": "bool",
 			"default": true
 		}
@@ -40,7 +45,7 @@
 		"universal", "utility", "interface", "enhancement", "customization"
 	],
 	"links": {
-		"community": "https://discord.gg/uproxide-s-little-land-1204580412299542608",
-		"source": "https://github.com/Uproxide/Texture-Workshop"
+		"community": "https://discord.gg",
+		"source": "https://github.com"
 	}
 }
