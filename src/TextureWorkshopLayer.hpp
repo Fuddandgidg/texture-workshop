@@ -1,12 +1,15 @@
 #pragma once
 
-using namespace geode::prelude;
+#include <Geode/Geode.hpp>
 #include <Geode/ui/TextInput.hpp>
 #include <Geode/utils/web.hpp>
 #include <Geode/loader/Event.hpp>
 #include "TexturePack.hpp"
 
-class TextureWorkshopLayer : public cocos2d::CCLayer, TextInputDelegate {
+using namespace geode::prelude;
+
+// 2.2081: Use FLAlertLayer for better pop-up behavior or CCLayer for full screens
+class TextureWorkshopLayer : public cocos2d::CCLayer, public TextInputDelegate {
 protected:
     CCLayerGradient* m_background;
     void parseJson(std::string str);
@@ -21,25 +24,30 @@ protected:
     CCMenuItemSpriteExtra* searchBtn;
     CCMenu* buttonMenu;
     std::string inputText;
+    
+    // 2.2081: Ensure the listener is properly typed
     EventListener<web::WebTask> m_listener;
-
     LoadingCircleSprite* loading;
 
+    virtual void textChanged(CCTextInputNode* p0) override;
 
-    virtual void textChanged(CCTextInputNode* p0);
-
-    ~TextureWorkshopLayer();
+    // Destructor to clean up the 'get' pointer
+    virtual ~TextureWorkshopLayer() {
+        get = nullptr;
+    }
     
 public:
     static TextureWorkshopLayer* create();
     static cocos2d::CCScene* scene();
     static inline TextureWorkshopLayer* get = nullptr;
+    
     bool init();
     TextInput* inp;
     std::vector<TexturePack*> tps = {};
+    
     void onClose(CCObject*);
     void searchTPs();
-    void keyBackClicked();
+    void keyBackClicked() override;
     void getTexturePacks();
     void onGetTPsFinished();
     void onDiscord(CCObject*);
