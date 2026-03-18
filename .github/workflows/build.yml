@@ -31,7 +31,7 @@ jobs:
       - name: Build Mod
         uses: geode-sdk/build-geode-mod@main
         with:
-          # Use 'latest' for stable or 'nightly' if 2.2081 requires the newest SDK features
+          # This must be latest to support 2.2081
           sdk: 'latest'
           platform: ${{ matrix.config.target || 'Windows' }}
           combine: true
